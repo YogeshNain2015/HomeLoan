@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -146,10 +149,19 @@ public class HomeLoanController {
 	
 	
 	@GetMapping("repay")
-	@PostMapping("repaySchedule")
-	public String repaySchedule() {
+	public String repay(ModelMap model) {
 		if(userAccount==Null)
 			return "UserLogin.jsp";
+
+		
+		String sql="Select * from repayment_schedule where acc_id in (Select acc_id from loan_acc where savings_acc_no=?)";
+		List<Map<String,Object>> result=jdbctemplate.queryForList(sql, userAccount.getLogId());
+//		for(int i=0;i<5;i++) {
+//			result.add(Map.of("acc_id",i,"year_mnth","guio","emi",75000,"principal",89000,"int_amt",543,"outstanding",543,"status","approved"));
+//		}
+		System.out.println(result);
+		model.addAttribute("resultset",result);		
+		
 		return "RepaySchedule.jsp";
 	}
 	
