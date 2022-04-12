@@ -8,7 +8,7 @@ public class LoanAccount {
 	int tenure;
 	String address;
 	long net_month_sal;
-	String image;
+	String assetImage;
 	String status;
 	public int getAcc_id() {
 		return acc_id;
@@ -49,11 +49,11 @@ public class LoanAccount {
 	public void setNet_month_sal(long net_month_sal) {
 		this.net_month_sal = net_month_sal;
 	}
-	public String getImage() {
-		return image;
+	public String getAssetImage() {
+		return assetImage;
 	}
-	public void setImage(String image) {
-		this.image = image;
+	public void setAssetImage(String image) {
+		this.assetImage = image;
 	}
 	public String getStatus() {
 		return status;

@@ -7,6 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-<p>This is my first UI in Spring Boots</p>
+<button onclick="window.location.href='/apply'"> Apply Loan</button>
+<button onclick="window.location.href='/repay'"> Repay Schedule</button>
+<button onclick="window.location.href='/prepay'"> Loan Prepayment</button>
+<button onclick="window.location.href='/foreclose'"> Loan Foreclosure</button>
 </body>
 </html>
