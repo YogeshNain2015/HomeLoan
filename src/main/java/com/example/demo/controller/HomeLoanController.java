@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.model.EmailSenderService;
 import com.example.demo.model.LoanAccount;
 import com.example.demo.model.User;
 
@@ -37,6 +38,8 @@ public class HomeLoanController {
 
 	@Autowired
 	JdbcTemplate jdbctemplate;
+	@Autowired
+	private EmailSenderService senderService;
 	
 	SimpleJdbcCall simpleJdbcCall;
 	User userAccount;
@@ -101,6 +104,9 @@ public class HomeLoanController {
 		
 		//if(loanaccount.getTotal_loan_amt() <= 50*loanaccount.getNet_month_sal() && loanaccount.getTotal_loan_amt()>0 && loanaccount.getTenure()>=5 && loanaccount.getTenure()<=20) {
 			try {
+				String sql="Select * from savings_acc where acc_no=?";
+				String email=(String) jdbctemplate.queryForList(sql, userAccount.getLogId()).get(0).get("email");
+				
 				simpleJdbcCall= new SimpleJdbcCall(jdbctemplate.getDataSource());
 				simpleJdbcCall.withCatalogName(DB_NAME);
 				// procedure name
@@ -134,6 +140,7 @@ public class HomeLoanController {
 				if (Integer.parseInt((String) result.get("out_result"))==1)
 				{
 					userLoanAccount=loanaccount;
+					senderService.sendEmail(email,"Loan Approval","Congratulations! your loan has been approved");
 					return "ApplyLoan.jsp";
 				}
 					
@@ -159,7 +166,7 @@ public class HomeLoanController {
 //		for(int i=0;i<5;i++) {
 //			result.add(Map.of("acc_id",i,"year_mnth","guio","emi",75000,"principal",89000,"int_amt",543,"outstanding",543,"status","approved"));
 //		}
-		System.out.println(result);
+		//System.out.println(result);
 		model.addAttribute("resultset",result);		
 		
 		return "RepaySchedule.jsp";
