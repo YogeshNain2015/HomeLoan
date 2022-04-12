@@ -105,7 +105,10 @@ public class HomeLoanController {
 		//if(loanaccount.getTotal_loan_amt() <= 50*loanaccount.getNet_month_sal() && loanaccount.getTotal_loan_amt()>0 && loanaccount.getTenure()>=5 && loanaccount.getTenure()<=20) {
 			try {
 				String sql="Select * from savings_acc where acc_no=?";
-				String email=(String) jdbctemplate.queryForList(sql, userAccount.getLogId()).get(0).get("email");
+				String email="";
+				
+				if (jdbctemplate.queryForList(sql, userAccount.getLogId()).size()!=0)
+				email=(String) jdbctemplate.queryForList(sql, userAccount.getLogId()).get(0).get("email");
 				
 				simpleJdbcCall= new SimpleJdbcCall(jdbctemplate.getDataSource());
 				simpleJdbcCall.withCatalogName(DB_NAME);

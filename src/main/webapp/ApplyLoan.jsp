@@ -33,7 +33,7 @@
 			        <div class="form-group">
 			            <label>Upload Image: </label><input type="file" name="image" required accept="image/png, image/jpeg" />
 			        </div>
-			        <button type="submit" class="btn btn-primary">Login</button>
+			        <button type="submit" class="btn btn-primary">Submit</button>
 			        <button type="reset" name="Cancel" class="btn btn-primary">Reset</button>
 				</form>
 				<script type="text/javascript" src="./JS/checks.js"></script>
