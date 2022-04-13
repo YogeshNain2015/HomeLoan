@@ -47,8 +47,8 @@ public class HomeLoanController {
 	
 	private final String DB_NAME = "homeloan";
 	private final String ADD_LOAN_ACC = "add_lone_acc";
-	private final String FORECLOSE_LOAN = "add_lone_acc";
-	private final String PREPAY_LOAN= "get_all_students";
+	private final String FORECLOSE_LOAN = "emi_full_payment";
+	private final String PREPAY_LOAN= "emi_partial_payment";
 	
 	@RequestMapping("home")
 	public String home() {
@@ -67,7 +67,7 @@ public class HomeLoanController {
 	@PostMapping("validate")
 	public String validateUser(User user) {
 		
-		String sql="Select * from user where login_id=? and passwd=?";
+		String sql="Select * from users where login_id=? and passwd=?";
 		int result=jdbctemplate.queryForList(sql, user.getLogId(),user.getPassword()).size();
 		if(result == 1)
 		{
@@ -77,19 +77,19 @@ public class HomeLoanController {
 		else
 		return "redirect:/";
 	}
-	@GetMapping("apply")
+	@RequestMapping("apply")
 	public String apply() {
 		if(userAccount==Null)
 			return "UserLogin.jsp";
 		return "ApplyLoan.jsp";
 	}
-	@GetMapping("prepay")
+	@RequestMapping("prepay")
 	public String prepay() {
 		if(userAccount==Null)
 			return "UserLogin.jsp";
 		return "PrePayLoan.jsp";
 	}
-	@GetMapping("foreclose")
+	@RequestMapping("foreclose")
 	public String foreclose() {
 		if(userAccount==Null)
 			return "UserLogin.jsp";
@@ -100,7 +100,7 @@ public class HomeLoanController {
 	@PostMapping("applyLoan")
 	public String applyLoan(LoanAccount loanaccount, @RequestParam("image") MultipartFile multipartFile) {
 		if(userAccount==Null)
-			return "UserLogin.jsp";
+			return "redirect:/";
 		
 		//if(loanaccount.getTotal_loan_amt() <= 50*loanaccount.getNet_month_sal() && loanaccount.getTotal_loan_amt()>0 && loanaccount.getTenure()>=5 && loanaccount.getTenure()<=20) {
 			try {
@@ -121,7 +121,7 @@ public class HomeLoanController {
 						new SqlParameter("in_addr", Types.VARCHAR),
 						new SqlParameter("in_net_mnth_sal", Types.INTEGER),
 						new SqlParameter("in_photo",Types.BLOB),
-						new SqlOutParameter("out_result", Types.INTEGER));
+						new SqlOutParameter("status", Types.INTEGER));
 				// put in parameter value in Map
 				Map<String, Object> map = new HashMap<String, Object>();
 				loanaccount.setSaving_acc_no(userAccount.getLogId());
@@ -133,18 +133,20 @@ public class HomeLoanController {
 				
 				String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 				loanaccount.setAssetImage(fileName);
-				final File image = new File(fileName);
+				System.out.println("file: "+fileName);
+				System.out.println("multi: "+multipartFile);
+				final File image = new File("C:\\Users\\admin\\Pictures\\Camera Roll\\"+fileName);
 			   final InputStream imageIs = new FileInputStream(image);   
 			   LobHandler lobHandler = new DefaultLobHandler(); 
 			   map.put("in_photo",new SqlLobValue(imageIs, (int)image.length(), lobHandler));
 			   
 			   Map<String, Object> result = simpleJdbcCall.execute(map);
 				
-				if (Integer.parseInt((String) result.get("out_result"))==1)
+				if (((int) result.get("status"))==1)
 				{
 					userLoanAccount=loanaccount;
 					senderService.sendEmail(email,"Loan Approval","Congratulations! your loan has been approved");
-					return "ApplyLoan.jsp";
+					return "redirect:home";
 				}
 					
 				
@@ -158,10 +160,10 @@ public class HomeLoanController {
 	}
 	
 	
-	@GetMapping("repay")
+	@RequestMapping("repay")
 	public String repay(ModelMap model) {
 		if(userAccount==Null)
-			return "UserLogin.jsp";
+			return "redirect:/";
 
 		
 		String sql="Select * from repayment_schedule where acc_id in (Select acc_id from loan_acc where savings_acc_no=?)";
@@ -179,25 +181,30 @@ public class HomeLoanController {
 	@RequestMapping("prepayLoan")
 	public String prepayLoan(Integer acc_id,Long amount) {
 		if(userAccount==Null)
-			return "UserLogin.jsp";
+			return "redirect:/";
 		try {
+			String sql="Select * from loan_acc where savings_acc_no=? and acc_id=?";
+			
+			if(jdbctemplate.queryForList(sql, userAccount.getLogId(),acc_id).size()==0)
+				return "PrePayLoan.jsp";
+			
 			simpleJdbcCall= new SimpleJdbcCall(jdbctemplate.getDataSource());
 			simpleJdbcCall.withCatalogName(DB_NAME);
 			// procedure name
 			simpleJdbcCall.withProcedureName(PREPAY_LOAN);
 			simpleJdbcCall.withoutProcedureColumnMetaDataAccess();
 			simpleJdbcCall.declareParameters(new SqlParameter("in_acc_id", Types.INTEGER),
-					new SqlParameter("in_emi", Types.DECIMAL),
-					new SqlOutParameter("out_result", Types.INTEGER));
+					new SqlParameter("in_emi_amt", Types.DECIMAL),
+					new SqlOutParameter("status", Types.INTEGER));
 			// put in parameter value in Map
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			map.put("in_acc_id", acc_id);
-			map.put("in_emi", amount);
+			map.put("in_emi_amt", amount);
 		   Map<String, Object> result = simpleJdbcCall.execute(map);
-			
-			if (Integer.parseInt((String) result.get("out_result"))==1)
-				return "PrePayLoan.jsp";
+			System.out.println((int) result.get("status"));
+			if (((int) result.get("status"))==1)
+				return "redirect:home";
 			
 	} catch (DataAccessException e) {
 		   System.out.println("DataAccessException " + e.getMessage());
@@ -209,15 +216,19 @@ public class HomeLoanController {
 	@RequestMapping("forecloseLoan")
 	public String forecloseLoan(Integer acc_id) {
 		if(userAccount==Null)
-			return "UserLogin.jsp";
+			return "redirect:/";
 		try {
+			String sql="Select * from loan_acc where savings_acc_no=? and acc_id=?";
+			
+			if(jdbctemplate.queryForList(sql, userAccount.getLogId(),acc_id).size()==0)
+				return "ForeCloseLoan.jsp";
 			simpleJdbcCall= new SimpleJdbcCall(jdbctemplate.getDataSource());
 			simpleJdbcCall.withCatalogName(DB_NAME);
 			// procedure name
 			simpleJdbcCall.withProcedureName(FORECLOSE_LOAN);
 			simpleJdbcCall.withoutProcedureColumnMetaDataAccess();
 			simpleJdbcCall.declareParameters(new SqlParameter("in_acc_id", Types.INTEGER),
-					new SqlOutParameter("out_result", Types.INTEGER));
+					new SqlOutParameter("status", Types.INTEGER));
 			// put in parameter value in Map
 			Map<String, Object> map = new HashMap<String, Object>();
 
@@ -225,8 +236,8 @@ public class HomeLoanController {
 		   
 		   Map<String, Object> result = simpleJdbcCall.execute(map);
 			
-			if (Integer.parseInt((String) result.get("out_result"))==1)
-				return "ForeCloseLoan.jsp";
+			if (((int) result.get("status"))==1)
+				return "redirect:home";
 			
 	} catch (DataAccessException e) {
 		   System.out.println("DataAccessException " + e.getMessage());

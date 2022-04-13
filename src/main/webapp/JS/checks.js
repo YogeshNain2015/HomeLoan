@@ -19,7 +19,6 @@ function exportData(){
  
     /* Declaring array variable */
     var rows =[];
- 
       //iterate through rows of table
     for(var i=0,row; row = table.rows[i];i++){
         //rows would be accessed using the "row" variable assigned in the for loop
@@ -29,6 +28,8 @@ function exportData(){
         column3 = row.cells[2].innerText;
         column4 = row.cells[3].innerText;
         column5 = row.cells[4].innerText;
+        column6 = row.cells[5].innerText;
+        column7 = row.cells[6].innerText;
  
     /* add a new records in the array */
         rows.push(
@@ -37,11 +38,14 @@ function exportData(){
                 column2,
                 column3,
                 column4,
-                column5
+                column5,
+                column6,
+                column7
             ]
         );
  
         }
+        console.log(rows[0].length);
         csvContent = "data:text/csv;charset=utf-8,";
          /* add the column delimiter as comma(,) and each row splitted by new line character (\n) */
         rows.forEach(function(rowArray){
