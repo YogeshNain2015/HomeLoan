@@ -11,7 +11,7 @@
 <title>Dashboard</title>
 </head>
 <body>
-	<div class="dashboard">
+	<div class="dashboard container">
 		<button class="btn btn-primary" onclick="window.location.href='/apply'"> Apply Loan</button>
 		<button class="btn btn-primary" onclick="window.location.href='/repay'"> Repay Schedule</button>
 		<button class="btn btn-primary" onclick="window.location.href='/prepay'"> Loan Prepayment</button>

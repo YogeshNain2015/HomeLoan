@@ -5,11 +5,17 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link href="http://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <link  rel="stylesheet" type="text/css" href="./css/style.css"></link>
+<title>Repay Schedule</title>
 </head>
 <body>
-<button onclick="exportData()">Export to CSV</button>
-<TABLE BORDER="1" id="loanTable">
+<div class="repay container">
+  
+  <button onclick="exportData()" class="btn btn-primary">Export to CSV</button>
+<TABLE BORDER="1" id="loanTable" class="table">
       <TR>
       <TH>Loan Account</TH>
       <TH>Year-Month</TH>
@@ -31,6 +37,8 @@
       </TR>
       </c:forEach>
      </TABLE>
+
+</div>
      <script type="text/javascript" src="./JS/checks.js"></script>
 </body>
 </html>

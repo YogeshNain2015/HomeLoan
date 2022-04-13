@@ -36,7 +36,19 @@
   height: 50px;
   line-height: 50px;
   padding: 0;
-  margin: 10px 0;
+  margin:10px 0;
+}
+
+.repay .btn.btn-primary {
+  background: #f0ad4e none repeat scroll 0 0;
+  border-color: #f0ad4e;
+  color: #ffffff;
+  font-size: 14px;
+  width: 30%;
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
+  margin:10px 0;
 }
 .forgot {
   text-align: left; margin-bottom:30px;
@@ -48,11 +60,9 @@
 }
 
 .dashboard {
+    float: right;
     padding: 100px;
     text-align: center;
-    display: flex;
-    align-content: center;
-    justify-content: center;
 }
 
 
@@ -60,6 +70,12 @@
   background: #f0ad4e none repeat scroll 0 0;
   border-color: #f0ad4e;
   color: #ffffff;
+  display: block;
+  width: 50%;
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
+  margin:10px 0;
 
 }
 .back { text-align: left; margin-top:10px;}
